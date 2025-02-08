@@ -12,39 +12,6 @@ Begin VB.Form Main
    ScaleHeight     =   4830
    ScaleWidth      =   8190
    StartUpPosition =   2  'CenterScreen
-   Begin VB.ComboBox cboSendData 
-      BeginProperty Font 
-         Name            =   "Courier New"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   345
-      Left            =   120
-      TabIndex        =   11
-      Top             =   4080
-      Width           =   3015
-   End
-   Begin VB.CommandButton cmdSendData 
-      Caption         =   "Enviar"
-      BeginProperty Font 
-         Name            =   "Courier New"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   345
-      Left            =   3360
-      TabIndex        =   10
-      Top             =   4080
-      Width           =   2295
-   End
    Begin VB.Frame frmVariable 
       Caption         =   "Variable <"
       BeginProperty Font 
@@ -58,7 +25,7 @@ Begin VB.Form Main
       EndProperty
       Height          =   3105
       Left            =   120
-      TabIndex        =   8
+      TabIndex        =   11
       Top             =   840
       Width           =   7935
       Begin VB.ListBox lstVariable 
@@ -74,7 +41,7 @@ Begin VB.Form Main
          EndProperty
          Height          =   2505
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   12
          Top             =   360
          Width           =   7695
       End
@@ -90,11 +57,11 @@ Begin VB.Form Main
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   345
-      Left            =   5760
-      TabIndex        =   7
+      Height          =   465
+      Left            =   120
+      TabIndex        =   10
       Top             =   4080
-      Width           =   2295
+      Width           =   7935
    End
    Begin VB.Timer Timer1 
       Interval        =   500
@@ -112,7 +79,7 @@ Begin VB.Form Main
    Begin VB.Frame frmConnect 
       Height          =   735
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   5
       Top             =   0
       Width           =   7935
       Begin VB.CommandButton cmdScanPort 
@@ -128,7 +95,7 @@ Begin VB.Form Main
          EndProperty
          Height          =   350
          Left            =   3120
-         TabIndex        =   6
+         TabIndex        =   9
          Top             =   240
          Width           =   2295
       End
@@ -145,7 +112,7 @@ Begin VB.Form Main
          EndProperty
          Height          =   350
          Left            =   5520
-         TabIndex        =   5
+         TabIndex        =   8
          Top             =   240
          Width           =   2295
       End
@@ -162,7 +129,7 @@ Begin VB.Form Main
          Height          =   345
          Left            =   1560
          Style           =   2  'Dropdown List
-         TabIndex        =   4
+         TabIndex        =   7
          Top             =   240
          Width           =   1335
       End
@@ -179,7 +146,7 @@ Begin VB.Form Main
          Height          =   345
          Left            =   120
          Style           =   2  'Dropdown List
-         TabIndex        =   3
+         TabIndex        =   6
          Top             =   240
          Width           =   1335
       End
@@ -200,6 +167,56 @@ Begin VB.Form Main
       TabIndex        =   0
       Top             =   840
       Width           =   7935
+      Begin VB.CommandButton cmdSendData 
+         Caption         =   "Enviar"
+         BeginProperty Font 
+            Name            =   "Courier New"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   345
+         Left            =   3840
+         TabIndex        =   4
+         Top             =   2640
+         Width           =   1935
+      End
+      Begin VB.ComboBox cboSendData 
+         BeginProperty Font 
+            Name            =   "Courier New"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   345
+         Left            =   120
+         TabIndex        =   3
+         Top             =   2640
+         Width           =   3615
+      End
+      Begin VB.CommandButton cmdClearTerminal 
+         Caption         =   "Limpar"
+         BeginProperty Font 
+            Name            =   "Courier New"
+            Size            =   9
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   345
+         Left            =   5880
+         TabIndex        =   2
+         Top             =   2640
+         Width           =   1935
+      End
       Begin VB.TextBox txtTerminal 
          BackColor       =   &H00000000&
          BeginProperty Font 
@@ -212,7 +229,7 @@ Begin VB.Form Main
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H0000FF00&
-         Height          =   2535
+         Height          =   2175
          Left            =   120
          Locked          =   -1  'True
          MultiLine       =   -1  'True

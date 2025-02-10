@@ -13,7 +13,7 @@ Begin VB.Form Main
    ScaleWidth      =   8190
    StartUpPosition =   2  'CenterScreen
    Begin VB.Frame frmVariable 
-      Caption         =   "Variable <"
+      Caption         =   "Debug <"
       BeginProperty Font 
          Name            =   "Courier New"
          Size            =   9
@@ -543,7 +543,7 @@ Private Sub mTerminal_Click()
     If frmVariable.Visible = True Then
         frmVariable.Visible = False
         frmTerminal.Visible = True
-        mTerminal.Caption = "Variable"
+        mTerminal.Caption = "Debug"
     Else
         frmTerminal.Visible = False
         frmVariable.Visible = True

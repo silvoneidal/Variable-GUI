@@ -6,6 +6,7 @@
  
 */
 
+
 ///////////////////////////////////////////////////////////////////
 // FUNÇÃO DE SETUP
 void setup() {
@@ -14,7 +15,7 @@ void setup() {
   pinMode(2, INPUT_PULLUP);
   pinMode(13, OUTPUT);
 
-  Serial.println("V0:Setup finalizado.");
+  Serial.println("V0:Pass");
   delay(100);
   
 }// end setup

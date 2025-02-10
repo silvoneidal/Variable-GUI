@@ -1,0 +1,12 @@
+Line 9: Property Icon in Main had an invalid file reference.
+Line 142: Property ItemData in cboCommPort had an invalid file reference.
+Line 144: Property List in cboCommPort had an invalid file reference.
+Line 214: Property ItemData in cboTermSpeed had an invalid file reference.
+Line 216: Property List in cboTermSpeed had an invalid file reference.
+Line 224: Property ItemData in cboTermDataBits had an invalid file reference.
+Line 226: Property List in cboTermDataBits had an invalid file reference.
+Line 234: Property ItemData in cboTermParity had an invalid file reference.
+Line 236: Property List in cboTermParity had an invalid file reference.
+Line 244: Property ItemData in cboTermStopBits had an invalid file reference.
+Line 246: Property List in cboTermStopBits had an invalid file reference.
+Line 300: Property Picture in Image1 had an invalid file reference.

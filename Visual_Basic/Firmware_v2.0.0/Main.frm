@@ -24,7 +24,7 @@ Begin VB.Form Main
       EndProperty
       Height          =   345
       Left            =   120
-      TabIndex        =   11
+      TabIndex        =   8
       Top             =   4080
       Width           =   3015
    End
@@ -41,45 +41,9 @@ Begin VB.Form Main
       EndProperty
       Height          =   345
       Left            =   3360
-      TabIndex        =   10
+      TabIndex        =   7
       Top             =   4080
       Width           =   2295
-   End
-   Begin VB.Frame frmVariable 
-      Caption         =   "Debug <"
-      BeginProperty Font 
-         Name            =   "Courier New"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   3105
-      Left            =   120
-      TabIndex        =   8
-      Top             =   840
-      Width           =   7935
-      Begin VB.ListBox lstVariable 
-         Appearance      =   0  'Flat
-         BackColor       =   &H00000000&
-         BeginProperty Font 
-            Name            =   "Courier New"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H00FFFFFF&
-         Height          =   2505
-         Left            =   120
-         TabIndex        =   9
-         Top             =   360
-         Width           =   7695
-      End
    End
    Begin VB.CommandButton cmdReset 
       Caption         =   "Reset"
@@ -94,7 +58,7 @@ Begin VB.Form Main
       EndProperty
       Height          =   345
       Left            =   5760
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   4080
       Width           =   2295
    End
@@ -114,7 +78,7 @@ Begin VB.Form Main
    Begin VB.Frame frmConnect 
       Height          =   735
       Left            =   120
-      TabIndex        =   2
+      TabIndex        =   1
       Top             =   0
       Width           =   7935
       Begin VB.CommandButton cmdScanPort 
@@ -130,7 +94,7 @@ Begin VB.Form Main
          EndProperty
          Height          =   350
          Left            =   3120
-         TabIndex        =   6
+         TabIndex        =   5
          Top             =   240
          Width           =   2295
       End
@@ -147,7 +111,7 @@ Begin VB.Form Main
          EndProperty
          Height          =   350
          Left            =   5520
-         TabIndex        =   5
+         TabIndex        =   4
          Top             =   240
          Width           =   2295
       End
@@ -164,7 +128,7 @@ Begin VB.Form Main
          Height          =   345
          Left            =   1560
          Style           =   2  'Dropdown List
-         TabIndex        =   4
+         TabIndex        =   3
          Top             =   240
          Width           =   1335
       End
@@ -181,13 +145,12 @@ Begin VB.Form Main
          Height          =   345
          Left            =   120
          Style           =   2  'Dropdown List
-         TabIndex        =   3
+         TabIndex        =   2
          Top             =   240
          Width           =   1335
       End
    End
    Begin VB.Frame frmTerminal 
-      Caption         =   "Terminal <"
       BeginProperty Font 
          Name            =   "Courier New"
          Size            =   9
@@ -206,7 +169,7 @@ Begin VB.Form Main
          BackColor       =   &H00000000&
          BeginProperty Font 
             Name            =   "Courier New"
-            Size            =   9
+            Size            =   9.75
             Charset         =   0
             Weight          =   400
             Underline       =   0   'False
@@ -214,13 +177,12 @@ Begin VB.Form Main
             Strikethrough   =   0   'False
          EndProperty
          ForeColor       =   &H0000FF00&
-         Height          =   2535
+         Height          =   2775
          Left            =   120
-         Locked          =   -1  'True
          MultiLine       =   -1  'True
-         ScrollBars      =   2  'Vertical
-         TabIndex        =   1
-         Top             =   360
+         TabIndex        =   9
+         Text            =   "Main.frx":6852
+         Top             =   240
          Width           =   7695
       End
    End
@@ -253,7 +215,8 @@ Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 
 Dim Titulo As String
 Dim index As Integer
-Dim buffer As String
+Dim Buffer As String
+Dim arrayVariable(9) As String
 Dim arrayName(9) As String
 
 Private Sub Form_Load()
@@ -277,15 +240,8 @@ On Error GoTo Erro
     ' Busca portas disponiveis
     Call cmdScanPort_Click
     
-    ' Informação de funções a serem programadas no arduino
-    lstVariable.ToolTipText = "Selecione e dê um duplo click para criar um nome para a variável."
-    frmVariable.ToolTipText = "Exemplo para arduino -> Serial.println(""V0:"" + String(value_variable); delay(100); " & _
-                              "é interessante o uso do delay em seguida."
-    
-    ' ' Ajustes inciais
+    ' Ajustes inciais
     cmdConnectPort.Enabled = True
-    frmTerminal.Visible = False
-    frmVariable.Visible = True
     shpConnect.BackColor = vbRed
     
     ' Inicia com reset de valores
@@ -360,8 +316,6 @@ Erro:
         cboCommPort.Enabled = True
         cboBaudRate.Enabled = True
         cmdScanPort.Enabled = True
-        frmTerminal.Enabled = False
-        frmVariable.Enabled = False
         shpConnect.BackColor = vbRed
         Me.Caption = Titulo
     End If
@@ -382,36 +336,63 @@ On Error GoTo Erro
             ' Recebe os dados da serial
             Dim Data As String
             Data = MSComm1.Input
-            buffer = buffer + Data
+            Buffer = Buffer + Data
             
-            ' Atualiza valores de Output e Analog
-            If Mid(buffer, 3, 1) = ":" Then
-                If Mid(buffer, 1, 1) = "V" Then
-                    Call updateVariable(buffer) ' Variable
-                End If
+            If mTerminal.Caption = "Debug" Then
+                ' Atualiza debug de variáveis
+                Dim i As Integer
+                For i = 0 To 9
+                    If Mid(Buffer, 1, 3) = "V" & i & ":" Then
+                        Call updateVariable(i, Buffer) ' Variable
+                    End If
+                Next i
+            Else
+                ' Atualiza terminal serial
+                With txtTerminal
+                    .SelStart = Len(txtTerminal.Text)
+                    .SelText = Data
+                    .SelStart = Len(txtTerminal.Text)
+                End With
             End If
             
             ' Limpa o buffer se receber uma nova linha
-            If Right(buffer, 1) = vbLf Then
+            If Right(Buffer, 1) = vbLf Then
                 'Debug.Print buffer
-                buffer = Empty
+                Buffer = Empty
             End If
-            
-            ' Atualiza terminal serial
-            With txtTerminal
-                .SelStart = Len(txtTerminal.Text)
-                .SelText = Data
-                .SelStart = Len(txtTerminal.Text)
-            End With
             
     End Select
     
 Exit Sub
 
 Erro:
-    If Err = 13 Then Exit Sub
     If Err = 380 Then Exit Sub
     MsgBox "Erro " & Err & ". " & Error, vbCritical, "DALCOQUIO AUTOMAÇÃO"
+
+End Sub
+
+Private Sub updateVariable(index As Integer, Buffer As String)
+    ' Remove retorno de carro do buffer
+    Buffer = Replace(Buffer, vbCr, "")
+    
+    ' Atualiza valor da variável no array
+    Dim X As Integer
+    For X = 0 To 9
+        If X = index Then
+            arrayVariable(X) = Buffer & " " & Time & " " & arrayName(X)
+            Debug.Print arrayVariable(X)
+            Exit For
+        End If
+    Next X
+    
+    ' Limpa o terminal antes de atualizar
+    txtTerminal.Text = Empty
+    
+    ' Atualiza todas as variáveis no terminal
+    Dim Y As Integer
+    For Y = 0 To 9
+            txtTerminal.Text = txtTerminal.Text + arrayVariable(Y) & vbCrLf
+    Next Y
 
 End Sub
 
@@ -454,66 +435,24 @@ Private Sub deleteDuplicados()
     
 End Sub
 
-Private Sub lstVariable_DblClick()
-    ' Obtém o item selecionado
-    Dim selectedItem As String
-    selectedItem = lstVariable.List(lstVariable.ListIndex)
-    If selectedItem = Empty Then Exit Sub
-    
-    Dim resposta As String
-    resposta = InputBox("Digite um nome para esta variável.", "DALÇÓQUIO AUTOMAÇÃO", arrayName(lstVariable.ListIndex))
-    arrayName(lstVariable.ListIndex) = resposta
-
-    lstVariable.List(lstVariable.ListIndex) = selectedItem & arrayName(lstVariable.ListIndex)
-    
-    Call ClearBufferSerial
-
-End Sub
-
-
-Private Sub updateVariable(Data As String)
-    Dim searchPrefix As String
-    Dim i As Integer
-    Dim foundIndex As Integer
-
-    ' Extrai a parte antes do ":" para usar como prefixo de busca
-    searchPrefix = Left(Data, InStr(Data, ":"))
-
-    ' Define um índice inicial para indicar que nenhum item foi encontrado
-    foundIndex = -1
-
-    ' Procura no ListBox pelo item que começa com o prefixo
-    For i = 0 To lstVariable.ListCount - 1
-        If Left(lstVariable.List(i), Len(searchPrefix)) = searchPrefix Then
-            ' Encontrou o item correspondente
-            foundIndex = i
-            Exit For
-        End If
-    Next i
-    
-    ' Verifica se o item foi encontrado
-    If foundIndex <> -1 Then
-        ' Atualiza o item no ListBox com o valor recebido
-        lstVariable.List(foundIndex) = Data & " " & Time & " " & arrayName(foundIndex)
-    End If
-
-End Sub
-
 Private Sub cmdReset_Click()
     ' Reset hardware via software
     MSComm1.DTREnable = False
     MSComm1.DTREnable = True
     
+    ' Limpa o buffer da serial
     Call ClearBufferSerial
     
-    ' Limpa listbox e terminal
-    lstVariable.Clear
+    ' Limpa terminal da serial
     txtTerminal.Text = Empty
     
-    ' Lista Variable
-    For i = 0 To 9
-        lstVariable.AddItem "V" & i & ":"
-    Next i
+    ' Reset para terminal ou debug
+    If mTerminal.Caption = "Debug" Then
+        For i = 0 To 9
+            arrayVariable(i) = "V" & i & ":"
+            txtTerminal.Text = txtTerminal.Text + arrayVariable(i) & vbCrLf
+        Next i
+    End If
     
 End Sub
 
@@ -528,16 +467,50 @@ Private Sub cmdClearTerminal_Click()
 End Sub
 
 Private Sub mTerminal_Click()
-    If frmVariable.Visible = True Then
-        frmVariable.Visible = False
-        frmTerminal.Visible = True
-        mTerminal.Caption = "Debug"
-    Else
-        frmTerminal.Visible = False
-        frmVariable.Visible = True
+    If mTerminal.Caption = "Debug" Then
+        txtTerminal.Text = Empty
         mTerminal.Caption = "Terminal"
+        txtTerminal.ToolTipText = Empty
+    Else
+        txtTerminal.Text = Empty
+        mTerminal.Caption = "Debug"
+        Call cmdReset_Click
+        txtTerminal.ToolTipText = "Exemplo para arduino -> Serial.println(""V0:"" + String(value_variable); delay(100); " & _
+                              "é recomendado uso do delay em seguida. Dê um duplo click para nomear a variável."
     End If
     
+End Sub
+
+Private Sub txtTerminal_DblClick()
+    If mTerminal.Caption = "Terminal" Then Exit Sub
+    
+    ' Aguarda retorno do usário
+    Dim retorno As String
+    retorno = InputBox("Digite o index de sua variável, seguido do nome desejado. " & _
+                       "Ex: V0:Nome_da_variável.", "DALÇÓQUIO AUTOMAÇÃO")
+                  
+    ' Verifica se variável é válida
+    Dim teste As Boolean
+    teste = False
+    For i = 0 To 9
+        If Left(retorno, 3) = "V" & i & ":" Then
+            teste = True
+            Exit For
+        End If
+    Next i
+    If teste = False Then GoTo None
+                       
+    ' Se válida, atualiza lista de variáveis
+    If retorno <> Empty Then
+        Dim index As Integer
+        index = Mid(retorno, 2, 1)
+        arrayName(index) = Mid(retorno, 4, Len(retorno))
+    End If
+    
+None:
+    ' Limpa o buffer da serial
+    Call ClearBufferSerial
+
 End Sub
 
 Private Sub mGerenciador_Click()

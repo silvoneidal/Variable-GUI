@@ -216,12 +216,13 @@ Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 Dim Titulo As String
 Dim index As Integer
 Dim Buffer As String
+Dim Debugger As Boolean
 Dim arrayVariable(9) As String
 Dim arrayName(9) As String
 
 Private Sub Form_Load()
     
-    Titulo = App.Title & "   " & "v" & App.Major & "." & App.Minor & "." & App.Revision
+    Titulo = App.Title & " v" & App.Major & "." & App.Minor & "." & App.Revision & "   by   DALÇÓQUIO AUTOMAÇÃO"
     Me.Caption = Titulo
 
 On Error GoTo Erro
@@ -338,12 +339,13 @@ On Error GoTo Erro
             Data = MSComm1.Input
             Buffer = Buffer + Data
             
-            If mTerminal.Caption = "Debug" Then
+            If Debugger = True Then
                 ' Atualiza debug de variáveis
                 Dim i As Integer
                 For i = 0 To 9
                     If Mid(Buffer, 1, 3) = "V" & i & ":" Then
                         Call updateVariable(i, Buffer) ' Variable
+                        Exit For
                     End If
                 Next i
             Else
@@ -357,7 +359,6 @@ On Error GoTo Erro
             
             ' Limpa o buffer se receber uma nova linha
             If Right(Buffer, 1) = vbLf Then
-                'Debug.Print buffer
                 Buffer = Empty
             End If
             
@@ -380,7 +381,6 @@ Private Sub updateVariable(index As Integer, Buffer As String)
     For X = 0 To 9
         If X = index Then
             arrayVariable(X) = Buffer & " " & Time & " " & arrayName(X)
-            Debug.Print arrayVariable(X)
             Exit For
         End If
     Next X
@@ -447,7 +447,7 @@ Private Sub cmdReset_Click()
     txtTerminal.Text = Empty
     
     ' Reset para terminal ou debug
-    If mTerminal.Caption = "Debug" Then
+    If Debugger = True Then
         For i = 0 To 9
             arrayVariable(i) = "V" & i & ":"
             txtTerminal.Text = txtTerminal.Text + arrayVariable(i) & vbCrLf
@@ -471,9 +471,11 @@ Private Sub mTerminal_Click()
         txtTerminal.Text = Empty
         mTerminal.Caption = "Terminal"
         txtTerminal.ToolTipText = Empty
+        Debugger = False
     Else
         txtTerminal.Text = Empty
         mTerminal.Caption = "Debug"
+        Debugger = True
         Call cmdReset_Click
         txtTerminal.ToolTipText = "Exemplo para arduino -> Serial.println(""V0:"" + String(value_variable); delay(100); " & _
                               "é recomendado uso do delay em seguida. Dê um duplo click para nomear a variável."
@@ -500,7 +502,7 @@ Private Sub txtTerminal_DblClick()
     Next i
     If teste = False Then GoTo None
                        
-    ' Se válida, atualiza lista de variáveis
+    ' Se válida, atualiza lista de nomes
     If retorno <> Empty Then
         Dim index As Integer
         index = Mid(retorno, 2, 1)

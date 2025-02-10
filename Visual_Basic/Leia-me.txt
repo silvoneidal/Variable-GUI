@@ -1,0 +1,2 @@
+Para v2.0.0 foi otimizado o código para uso de variáveis do tipo lista para nome e variável.
+Com isso foi retirado o listbox e usado somente o textbox.

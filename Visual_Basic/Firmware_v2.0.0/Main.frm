@@ -41,6 +41,7 @@ Begin VB.Form Main
       EndProperty
       Height          =   345
       Left            =   3360
+      Style           =   1  'Graphical
       TabIndex        =   7
       Top             =   4080
       Width           =   2295
@@ -348,6 +349,10 @@ On Error GoTo Erro
                         Exit For
                     End If
                 Next i
+                ' Atualiza de break point
+                If Left(Buffer, 1) = "B" And Mid(Buffer, 3, 1) = ":" Then
+                    Call updateBreak(Buffer)
+                End If
             Else
                 ' Atualiza terminal serial
                 With txtTerminal
@@ -396,19 +401,25 @@ Private Sub updateVariable(index As Integer, Buffer As String)
 
 End Sub
 
-Private Sub ClearBufferSerial()
-  Dim Data As String
+Private Sub updateBreak(Buffer As String)
+    Dim index As String
+    index = Mid(Buffer, 2, 1)
+    cmdSendData.BackColor = vbYellow
+    cmdSendData.Caption = "Break(" & index & ")"
+    Beep
 
-  ' Verifica se há dados disponíveis
-  Do While MSComm1.InBufferCount > 0
-    ' Lê todos os dados disponíveis
-    Data = MSComm1.Input
-    ' Descarta os dados (opcional: você poderia processá-los aqui se necessário)
-  Loop
 End Sub
 
 Private Sub cmdSendData_Click()
     If MSComm1.PortOpen = False Then Exit Sub
+    
+    ' Se mode em break
+    If cmdSendData.BackColor = vbYellow Then
+        MSComm1.Output = "0"
+        cmdSendData.BackColor = &H8000000F  ' ButtonFace
+        cmdSendData.Caption = "Enviar"
+    End If
+    
     If cboSendData.Text = "" Then Exit Sub
     
     ' Envia dado pela serial
@@ -419,6 +430,17 @@ Private Sub cmdSendData_Click()
     deleteDuplicados
     cboSendData.Text = Empty
     
+End Sub
+
+Private Sub ClearBufferSerial()
+  Dim Data As String
+
+  ' Verifica se há dados disponíveis
+  Do While MSComm1.InBufferCount > 0
+    ' Lê todos os dados disponíveis
+    Data = MSComm1.Input
+    ' Descarta os dados (opcional: você poderia processá-los aqui se necessário)
+  Loop
 End Sub
 
 Private Sub deleteDuplicados()
@@ -454,6 +476,10 @@ Private Sub cmdReset_Click()
         Next i
     End If
     
+    ' Restaura button enviar
+    cmdSendData.Caption = "Enviar"
+    cmdSendData.BackColor = &H8000000F  ' ButtonFace
+    
 End Sub
 
 Private Sub clearValue()
@@ -477,8 +503,7 @@ Private Sub mTerminal_Click()
         mTerminal.Caption = "Debug"
         Debugger = True
         Call cmdReset_Click
-        txtTerminal.ToolTipText = "Exemplo para arduino -> Serial.println(""V0:"" + String(value_variable); delay(100); " & _
-                              "é recomendado uso do delay em seguida. Dê um duplo click para nomear a variável."
+        txtTerminal.ToolTipText = "Dê um duplo click para nomear a variável."
     End If
     
 End Sub
